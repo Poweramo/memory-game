@@ -9,8 +9,6 @@ let flippingCounter = 0;
 let score = 0;
 let failedTries = 0;
 
-console.log(cardsContainer);
-
 const unflipCards = () => {
 	const flippedCards = document.querySelectorAll(".flipped-card");
 	for (let i = 0; i < flippedCards.length; i++) {
@@ -28,32 +26,48 @@ const unflipCards = () => {
 
 const didCardsMatched = (img, format) => {
 	const flippedCards = document.querySelectorAll(".flipped-card");
-	for (let i = 0; i < flippedCards.length; i++) {
-		if (flippedCards[i].id == flippedCards[i + 1].id) {
-			score++;
-			scoreElement.textContent = `Score : ${score}`;
-			flippedCards[i].addEventListener("click", () => {
-				flippedCards[
-					i
-				].innerHTML = `<img src="./img/${flippedCards[i].id}.jpg" alt="${flippedCards[i].id}"/>`;
-				flippedCards[i].classList.remove("flipped-card");
-			});
-		} else {
-			failedTries++;
-			failedTriesElement.textContent = `Failed attempts : ${failedTries}`;
+	if (flippedCards.length > 2) {
+		for (let i = 0; i < flippedCards.length; i++) {
+			flippedCards[i].innerHTML = "";
+			flippedCards[i].classList.remove("flipped-card");
+		}
+	} else {
+		if (flippedCards.length == 2) {
+			if (flippedCards[0].id == flippedCards[1].id) {
+				for (let i = 0; i < flippedCards.length; i++) {
+					flippedCards[
+						i
+					].innerHTML = `<img src="./img/${flippedCards[i].id}.jpg" alt="${flippedCards[i].id}"/>`;
+					flippedCards[i].classList.remove("flipped-card");
+					flippedCards[i].addEventListener("click", () => {
+						flippedCards[
+							i
+						].innerHTML = `<img src="./img/${flippedCards[i].id}.jpg" alt="${flippedCards[i].id}"/>`;
+						flippedCards[i].classList.remove("flipped-card");
+					});
+					flippedCards[i].classList.add("matching-cards");
+				}
+				score++;
+				scoreElement.textContent = `Score : ${score}`;
+			} else {
+				failedTries++;
+				failedTriesElement.textContent = `Failed attempts : ${failedTries}`;
+				for (let i = 0; i < flippedCards.length; i++) {
+					setTimeout(() => {
+						flippedCards[i].innerHTML = "";
+						flippedCards[i].classList.remove("flipped-card");
+					}, 300);
+				}
+			}
 		}
 	}
-	flippingCounter = 0;
 };
 
 for (let i = 0; i < cardsContainer.children.length; i++) {
 	const cardElement = cardsContainer.children[i];
-	console.log(cardElement);
 
 	const addCardLogic = (img) => {
 		cardElement.id = img;
-
-		// cardElement.classList.toggle("flipped-card");
 	};
 
 	if (i == 0 || i == 1) {
@@ -67,36 +81,28 @@ for (let i = 0; i < cardsContainer.children.length; i++) {
 
 for (let i = 0; i < cardsContainer.children.length; i++) {
 	const cardElement = cardsContainer.children[i];
+
 	cardElement.addEventListener("click", () => {
 		cardElement.classList.toggle("flipped-card");
-		if (flippingCounter === 2) {
-			didCardsMatched();
-		} else if (flippingCounter >= 2) {
-			// flippingCounter = 0;
-			// cardElement.innerHTML = "";
-			unflipCards();
-			console.log(flippingCounter);
-		} else {
-			if (cardElement.hasChildNodes()) {
-				flippingCounter--;
-				cardElement.innerHTML = "";
-				console.log(flippingCounter);
-			} else {
-				flippingCounter++;
-				console.log(flippingCounter);
-				switch (cardElement.id) {
-					case "ninja":
-						cardElement.innerHTML = `<img src="./img/ninja.png" alt="ninja"/>`;
-						break;
 
-					case "car":
-						cardElement.innerHTML = `<img src="./img/car.jpg" alt="car"/>`;
-						break;
-					case "football":
-						cardElement.innerHTML = `<img src="./img/football.jpg" alt="football"/>`;
-						break;
-				}
+		if (cardElement.hasChildNodes()) {
+			flippingCounter--;
+			cardElement.innerHTML = "";
+		} else {
+			flippingCounter++;
+			switch (cardElement.id) {
+				case "ninja":
+					cardElement.innerHTML = `<img src="./img/ninja.png" alt="ninja"/>`;
+					break;
+
+				case "car":
+					cardElement.innerHTML = `<img src="./img/car.jpg" alt="car"/>`;
+					break;
+				case "football":
+					cardElement.innerHTML = `<img src="./img/football.jpg" alt="football"/>`;
+					break;
 			}
 		}
+		didCardsMatched();
 	});
 }
